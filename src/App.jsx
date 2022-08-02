@@ -56,6 +56,28 @@ export class App extends Component {
     }));
   };
 
+  // it is called once,is useful to get initial data
+  componentDidMount() {
+    console.log('App componentDidMount');
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    // checks for null (if there are contacts, then...)
+    if (parsedContacts) {
+      console.log(parsedContacts);
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  // class method, do not use arrow function
+  // it is called after each update
+  componentDidUpdate(prevProps, prevState) {
+    console.log('App componentDidUpdate');
+    if (this.state.contacts !== prevState.contacts) {
+      console.log('Updated contacts list ');
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   render() {
     const filteredContacts = this.getFilteredContacts();
 
@@ -85,36 +107,3 @@ export class App extends Component {
     );
   }
 }
-
-// =================== My Notes =====================
-// onSubmit={this.formSubmitHandler}
-// =======
-// formSubmitHandler =data=>{
-//   console.log(data);
-// }
-
-// without distructurization
-// const normilezedFilter=this.state.filter.toLowerCase();
-// const filteredContacts=this.state.contacts.filter(contact=>
-//   contact.name.toLowerCase().includes(normilezedFilter));
-
-// ******* For ContactForm
-// addContact = ({name, number})=>{
-// const contact={
-// id:nanoid(3),
-// name,
-// number,
-// };
-
-// without destructarization
-// // this.setState(prevState=>({
-// //   contacts:[contact,...prevState.contacts],
-// // }))
-
-// this.setState(({contacts})=>({
-//   contacts:[contact,...contacts],
-// }));
-
-// };
-
-// *****
