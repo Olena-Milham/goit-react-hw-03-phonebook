@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { ContactForm } from 'components/ContactForm/Form';
 import { Box } from 'components/ui/Box';
 import { Section } from 'components/ui/Section';
+import { ToastContainer, toast } from 'react-toastify';
 
 export class App extends Component {
   state = {
@@ -17,6 +18,24 @@ export class App extends Component {
     ],
     filter: '',
   };
+
+  // it is called once,is useful to get initial data
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    // checks for null (if there are contacts, then...)
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  // as it's a class method, do not use arrow function
+  // it is called after each update
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   handleSubmit = values => {
     const name = values.name;
@@ -33,7 +52,8 @@ export class App extends Component {
       });
       return true;
     }
-    alert(`${name} is already in contacts`);
+    // alert(`${name} is already in contacts`); //toast ? toast.error('')
+    toast('this name is already in contacts');
     return false;
   };
 
@@ -56,28 +76,6 @@ export class App extends Component {
     }));
   };
 
-  // it is called once,is useful to get initial data
-  componentDidMount() {
-    console.log('App componentDidMount');
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    // checks for null (if there are contacts, then...)
-    if (parsedContacts) {
-      console.log(parsedContacts);
-      this.setState({ contacts: parsedContacts });
-    }
-  }
-
-  // class method, do not use arrow function
-  // it is called after each update
-  componentDidUpdate(prevProps, prevState) {
-    console.log('App componentDidUpdate');
-    if (this.state.contacts !== prevState.contacts) {
-      console.log('Updated contacts list ');
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
   render() {
     const filteredContacts = this.getFilteredContacts();
 
@@ -91,8 +89,8 @@ export class App extends Component {
           as="section"
         >
           <Section title="Phonebook">
-            {/* <ContactForm onSubmit={this.addContact}/> */}
             <ContactForm onSubmit={this.handleSubmit} />
+            <ToastContainer />
           </Section>
 
           <Section title="Contacts">
